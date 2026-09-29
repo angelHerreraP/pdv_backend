@@ -1,3 +1,20 @@
 spring:
   application:
     name: pdv-backend
+  datasource:
+    url: jdbc:postgresql://100.123.170.91:5432/pdv
+    username: admin_pdv
+    password: Viper-1018@
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+server:
+  port: 8080
+
+jwt:
+  secret: "Felipe-es-el-mejor-perro-Noch-su-amigo-Viper-1018@@FELIPE"
+  expiration: 8400000
