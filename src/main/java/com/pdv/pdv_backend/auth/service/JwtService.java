@@ -21,14 +21,24 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String usuario, String rol){
+    public String generateToken(String usuario, String rol, Long sucursalId){
         return Jwts.builder()
                 .subject(usuario)
                 .claim("rol", rol)
+                .claim("sucursal", sucursalId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public Long extraeSucursalId(String token){
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("sucrusalId", Long.class);
     }
 
     public String extraerUsuario(String token){

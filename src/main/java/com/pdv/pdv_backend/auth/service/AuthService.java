@@ -25,8 +25,8 @@ public class AuthService {
         if(!passwordEncoder.matches(dto.password(), usuario.getPasswordHash())){
             throw new IllegalArgumentException("El usuario o contraseña son incorrectos.");
         }
-        String token = jwtService.generateToken(usuario.getUsuario(), usuario.getRol().getNombre());
-        return new LoginResponseDto(token, usuario.getUsuario(), usuario.getRol().getNombre());
+        String token = jwtService.generateToken(usuario.getUsuario(), usuario.getRol().getNombre(), usuario.getSucursal().getId());
+        return new LoginResponseDto(token, usuario.getUsuario(), usuario.getRol().getNombre(), usuario.getSucursal().getNombre());
     }
 
     // TODO: remover durabilidad de TOKEN, POR ENDE, aqui va un RefreshToken

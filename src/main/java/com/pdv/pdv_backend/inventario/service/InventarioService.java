@@ -7,6 +7,7 @@ import com.pdv.pdv_backend.inventario.entity.Inventario;
 import com.pdv.pdv_backend.inventario.repository.InventarioRepository;
 import com.pdv.pdv_backend.producto.repository.ProductoRepository;
 import com.pdv.pdv_backend.sucursal.repository.SucursalRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,10 @@ public class InventarioService {
         this.sucursalRepository = sucursalRepository;
     }
 
-    public List<InventarioResponseDto> inventarioDeSucursal(Long sucursalId){
+    public List<InventarioResponseDto> inventarioDeSucursal(Long sucursalId, String rol, Long sucursalIdDelToken) {
+        if (rol.equals("sucursal") && !sucursalIdDelToken.equals(sucursalId)) {
+            throw new AccessDeniedException("No puedes ver el inventario de otra sucursal");
+        }
         return inventarioRepository.findBySucursalId(sucursalId)
                 .stream()
                 .map(this::toResponseDto)
@@ -31,7 +35,7 @@ public class InventarioService {
     }
 
     public InventarioResponseDto aumentarInventario(AjustarInventarioDto dto){
-        Inventario inventarioActual = inventarioRepository.findByProductoIdAnducursalId(dto.productoId(), dto.sucursalId())
+        Inventario inventarioActual = inventarioRepository.findByProductoIdAndSucursalId(dto.productoId(), dto.sucursalId())
             .orElseGet(()->{
                 Inventario nuevo = new Inventario();nuevo.setProducto(productoRepository.getReferenceById(dto.productoId()));
                 nuevo.setSucursal(sucursalRepository.getReferenceById(dto.sucursalId()));
@@ -42,13 +46,20 @@ public class InventarioService {
         return toResponseDto(inventarioRepository.save(inventarioActual));
     }
     public InventarioResponseDto reducirInventario(AjustarInventarioDto dto){
-        Inventario inventarioActual = inventarioRepository.findByProductoIdAnducursalId(dto.productoId(), dto.sucursalId())
+        Inventario inventarioActual = inventarioRepository.findByProductoIdAndSucursalId(dto.productoId(), dto.sucursalId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("El producto que intentas reducir, no tiene stock o no existe."));
         if(inventarioActual.getCantidad()  < dto.cantidad()) {
             throw new IllegalArgumentException("No hay stock suficiente para reducir esa cantidad.");
         }
         inventarioActual.setCantidad(inventarioActual.getCantidad() - dto.cantidad());
         return toResponseDto(inventarioRepository.save(inventarioActual));
+    }
+
+    public List<InventarioResponseDto> listarTodo(){
+        return inventarioRepository.findAll()
+                .stream()
+                .map(this::toResponseDto)
+                .toList();
     }
 
     private InventarioResponseDto toResponseDto(Inventario inventario) {
@@ -60,6 +71,5 @@ public class InventarioService {
         );
 
     }
-
 
 }

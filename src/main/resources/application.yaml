@@ -2,19 +2,19 @@ spring:
   application:
     name: pdv-backend
   datasource:
-    url: jdbc:postgresql://100.123.170.91:5432/pdv
-    username: admin_pdv
-    password: Viper-1018@
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pdv}
+    username: ${DB_USERNAME:admin_pdv}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false # En prod déjalo en false para no saturar disco ni exponer datos en logs
     properties:
       hibernate:
-        format-sql: true
+        format-sql: false
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 jwt:
-  secret: "Felipe-es-el-mejor-perro-Noch-su-amigo-Viper-1018@@FELIPE"
-  expiration: 8400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:8400000}

@@ -1,5 +1,6 @@
 package com.pdv.pdv_backend.sucursal.service;
 
+import com.pdv.pdv_backend.inventario.repository.InventarioRepository;
 import com.pdv.pdv_backend.sucursal.dto.request.CreateSucursalRequestDto;
 import com.pdv.pdv_backend.sucursal.dto.response.SucursalResponseDto;
 import com.pdv.pdv_backend.sucursal.entity.Sucursal;
@@ -64,7 +65,6 @@ public class SucursalService {
         return teResponseDto(sucursal);
 
     }
-
 
 
     private SucursalResponseDto teResponseDto(Sucursal sucursal){
