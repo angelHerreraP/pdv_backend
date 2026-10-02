@@ -1,0 +1,45 @@
+name: deployPOS to homelab
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Build JAR package
+        run: ./gradlew bootJar -x test
+
+      - name: Connect to Tailscale Network
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          
+      - name: Transfer and Deploy Atomic Release
+        run: |
+          RELEASE="pos-backend-$(date +%Y%m%d%H%M%S).jar"
+
+          scp -i ~/.ssh/id_ed25519 build/libs/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/pos-app/releases/$RELEASE
+
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            ln -sfn /opt/pos-app/releases/$RELEASE /opt/pos-app/pos-backend.jar
+            sudo /bin/systemctl restart pos.service
+            sudo /bin/systemctl status pos.service --no-pager
+          EOF
