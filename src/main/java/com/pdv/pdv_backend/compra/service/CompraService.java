@@ -78,4 +78,30 @@ public class CompraService {
         );
 
     }
+
+    public List<CompraResponseDto> listarCompras(){
+        return compraRepository.findAll()
+                .stream()
+                .map(this::toResponseDto)
+                .toList();
+    }
+    private CompraResponseDto toResponseDto(Compra compra) {
+        List<DetalleCompraResponseDto> detalles = detalleCompraRepository.findByCompraId(compra.getId())
+                .stream()
+                .map(d -> new DetalleCompraResponseDto(
+                        d.getProducto().getId(),
+                        d.getProducto().getNombre(),
+                        d.getCostoUnitario(),
+                        d.getCantidad()
+                ))
+                .toList();
+
+        return new CompraResponseDto(
+                compra.getId(),
+                compra.getProveedor().getNombre(),
+                compra.getSucursal().getNombre(),
+                compra.getFecha(),
+                detalles
+        );
+    }
 }

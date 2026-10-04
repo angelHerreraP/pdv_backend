@@ -21,7 +21,7 @@ public class InventarioController {
     }
 
     // Buscar inventario por sucursal (Sucursales su inventario, admin
-    @GetMapping("/sucursal/{sucursalId}")
+    @GetMapping("/sucursal/{sucursalId}/inventario")
     public List<InventarioResponseDto> listarPorSucursal(@PathVariable Long sucursalId,
                                                          HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
