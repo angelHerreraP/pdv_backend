@@ -6,6 +6,7 @@ import com.pdv.pdv_backend.marca.service.MarcaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/marcas")
 @RequiredArgsConstructor
+@Tag(name = "Marca", description = "Gestion de las marcas de productos")
 public class MarcaController {
 
     private final MarcaService marcaService;
