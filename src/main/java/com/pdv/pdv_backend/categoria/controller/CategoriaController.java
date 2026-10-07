@@ -42,6 +42,11 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.listarCategorias());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseCategoriaDto> obtener(@PathVariable Long id){
+        return ResponseEntity.ok(categoriaService.obtenerCategoria(id));
+    }
+
 
     @Operation(summary = "Eliminar una categoría")
     @ApiResponses({
