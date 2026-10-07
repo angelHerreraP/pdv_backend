@@ -5,21 +5,21 @@ import com.pdv.pdv_backend.categoria.dto.response.ResponseCategoriaDto;
 import com.pdv.pdv_backend.categoria.entity.Categoria;
 import com.pdv.pdv_backend.categoria.repository.CategoriaRepository;
 import com.pdv.pdv_backend.config.exception.ApiException;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoriaService {
     private final CategoriaRepository categoriaRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository){
-        this.categoriaRepository = categoriaRepository;
-    }
-
+    @Transactional
     public ResponseCategoriaDto crearCategoria(CreateCategoriaRequestDto dto){
-        if (dto.nombre() == null || dto.nombre().isBlank()){
-            throw  ApiException.invalido("El nombre de la categoria no puede estar vacio");
+        if(categoriaRepository.existsByNombre(dto.nombre())){
+            throw ApiException.conflicto("Ya existe una categoria con ese nombre.");
         }
         Categoria categoriaNueva = new Categoria();
         categoriaNueva.setNombre(dto.nombre());
@@ -38,7 +38,16 @@ public class CategoriaService {
                 .stream()
                 .map(c -> new ResponseCategoriaDto(c.getId(), c.getNombre()))
                 .toList();
+    }
 
-
+    @Transactional
+    public ResponseCategoriaDto editarCategoria(Long categoriaId, CreateCategoriaRequestDto dto){
+        Categoria  c = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> ApiException.noEncontrado("La categoria no existe."));
+        if(categoriaRepository.existsByNombreAndIdNot(dto.nombre(), categoriaId)){
+            throw ApiException.conflicto("Ya existe una categoria con ese nombre.");
+        }
+        c.setNombre(dto.nombre());
+        return new ResponseCategoriaDto(c.getId(), c.getNombre());
     }
 }
