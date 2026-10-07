@@ -4,6 +4,7 @@ import com.pdv.pdv_backend.categoria.dto.request.CreateCategoriaRequestDto;
 import com.pdv.pdv_backend.categoria.dto.response.ResponseCategoriaDto;
 import com.pdv.pdv_backend.categoria.entity.Categoria;
 import com.pdv.pdv_backend.categoria.repository.CategoriaRepository;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class CategoriaService {
 
     public ResponseCategoriaDto crearCategoria(CreateCategoriaRequestDto dto){
         if (dto.nombre() == null || dto.nombre().isBlank()){
-            throw new IllegalArgumentException("El nombre de la categoria no puede estar vacio");
+            throw  ApiException.invalido("El nombre de la categoria no puede estar vacio");
         }
         Categoria categoriaNueva = new Categoria();
         categoriaNueva.setNombre(dto.nombre());
@@ -28,7 +29,7 @@ public class CategoriaService {
 
     public void eliminarCategoria(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Ese id no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("Ese id no existe."));
         categoriaRepository.delete(categoria);
     }
 

@@ -7,6 +7,7 @@ import com.pdv.pdv_backend.auth.entity.Rol;
 import com.pdv.pdv_backend.auth.entity.Usuario;
 import com.pdv.pdv_backend.auth.repository.RolRepository;
 import com.pdv.pdv_backend.auth.repository.UsuarioRepository;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.sucursal.entity.Sucursal;
 import com.pdv.pdv_backend.sucursal.repository.SucursalRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,7 @@ public class UsuarioService {
 
     public UserResponseDto crearUsuario(CreateUsuarioRequestDto dto){
         Rol rol = rolRepository.findById(dto.rolId())
-                .orElseThrow(() -> new IllegalArgumentException("No existe el rol a asignar"));
+                .orElseThrow(() -> ApiException.conflicto("No existe el rol a asignar"));
 
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(dto.nombre());
@@ -44,7 +45,7 @@ public class UsuarioService {
 
         if(dto.sucursalId() != null){
             Sucursal sucursal = sucursalRepository.findById(dto.sucursalId())
-                    .orElseThrow(() -> new IllegalArgumentException("La sucursal que intentas asignar no existe."));
+                    .orElseThrow(() -> ApiException.conflicto("La sucursal que intentas asignar no existe."));
             nuevoUsuario.setSucursal(sucursal);
         }
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
@@ -61,7 +62,7 @@ public class UsuarioService {
 
     public UserResponseDto editarUsuario(Long id, UpdateUsuarioRequestDto dto){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario al que intenta modificar no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("El usuario al que intenta modificar no existe."));
         if (dto.nombre() != null && !dto.nombre().isBlank()) {
             usuario.setNombre(dto.nombre());
         }
@@ -72,13 +73,13 @@ public class UsuarioService {
 
         if (dto.rolId() != null) {
             Rol rol = rolRepository.findById(dto.rolId())
-                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado"));
+                    .orElseThrow(() -> ApiException.noEncontrado("Rol no encontrado"));
             usuario.setRol(rol);
         }
 
         if (dto.sucursalId() != null) {
             Sucursal sucursal = sucursalRepository.findById(dto.sucursalId())
-                    .orElseThrow(() -> new IllegalArgumentException("Sucursal no encontrada"));
+                    .orElseThrow(() -> ApiException.noEncontrado("Sucursal no encontrada"));
             usuario.setSucursal(sucursal);
         }
 

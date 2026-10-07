@@ -1,6 +1,6 @@
 package com.pdv.pdv_backend.sucursal.service;
 
-import com.pdv.pdv_backend.inventario.repository.InventarioRepository;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.sucursal.dto.request.CreateSucursalRequestDto;
 import com.pdv.pdv_backend.sucursal.dto.response.SucursalResponseDto;
 import com.pdv.pdv_backend.sucursal.entity.Sucursal;
@@ -20,7 +20,7 @@ public class SucursalService {
 
     public SucursalResponseDto createSucursal(CreateSucursalRequestDto dto){
         if(dto.nombre().isBlank()){
-            throw new IllegalArgumentException("Nel nombre de la sucursal no puede estar vacio.");
+            throw ApiException.invalido("Nel nombre de la sucursal no puede estar vacio.");
         }
 
         Sucursal nuevaSucursal = new Sucursal();
@@ -34,7 +34,7 @@ public class SucursalService {
 
     public void eliminarSucural(Long id){
         Sucursal sucursal = sucursalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Esa sucursal no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("Esa sucursal no existe."));
         sucursalRepository.deleteById(id);
     }
 
@@ -49,7 +49,7 @@ public class SucursalService {
 
     public SucursalResponseDto actualizarSucursal(Long id, CreateSucursalRequestDto dto){
         Sucursal sucursal = sucursalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("La Sucursal a editar no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("La Sucursal a editar no existe."));
 
         if (dto.nombre() != null && !dto.nombre().isBlank()) {
             sucursal.setNombre(dto.nombre());

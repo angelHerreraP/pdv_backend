@@ -1,6 +1,6 @@
 package com.pdv.pdv_backend.vendedores.service;
 
-import com.pdv.pdv_backend.config.exception.VendedorException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.vendedores.dto.request.CrearHorarioRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.request.UpdateHorarioRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.response.HorarioResponseDto;
@@ -23,10 +23,10 @@ public class HorarioService {
 
     public HorarioResponseDto crearHorario(CrearHorarioRequestDto dto){
         if(horarioVendedorRepository.findByVendedorId(dto.vendedorId()).isPresent()){
-            throw new VendedorException("El vendedor ya tiene un horario asignado");
+            throw ApiException.conflicto("El vendedor ya tiene un horario asignado");
         }
         Vendedor vendedor = vendedorRepository.findById(dto.vendedorId())
-                .orElseThrow(() -> new VendedorException("Vendedor no encontrado."));
+                .orElseThrow(() -> ApiException.noEncontrado("Vendedor no encontrado."));
         HorarioVendedor horario = new HorarioVendedor();
         horario.setVendedor(vendedor);
         horario.setHoraEntradaEsperada(dto.horaEntradaEsperada());
@@ -39,7 +39,7 @@ public class HorarioService {
 
     public HorarioResponseDto editarHorario(Long vendedorId, UpdateHorarioRequestDto dto){
         HorarioVendedor horarioVendedor = horarioVendedorRepository.findByVendedorId(vendedorId)
-                .orElseThrow(() -> new VendedorException("El vendedor al que se le se quiere modificar el horario no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("El vendedor al que se le se quiere modificar el horario no existe."));
         if(dto.horaEntradaEsperada()!= null ){
             horarioVendedor.setHoraEntradaEsperada(dto.horaEntradaEsperada());
         }

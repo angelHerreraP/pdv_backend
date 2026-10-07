@@ -1,7 +1,6 @@
 package com.pdv.pdv_backend.vendedores.service;
 
-import com.pdv.pdv_backend.config.exception.RecursoNoEncontradoException;
-import com.pdv.pdv_backend.config.exception.VendedorException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.vendedores.dto.request.CrearVendedorRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.request.UpdateVendedorRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.response.VendedorResponseDto;
@@ -33,7 +32,7 @@ public class VendedorService {
 
     public VendedorResponseDto modificarVendedor(Long id,UpdateVendedorRequestDto dto){
         Vendedor vendedor =  vendedorRepository.findById(id)
-                .orElseThrow(() -> new VendedorException("El vendedor no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("El vendedor no existe."));
 
         if (dto.nombre() != null && !dto.nombre().isBlank()) {
             vendedor.setNombre(dto.nombre());
@@ -61,7 +60,7 @@ public class VendedorService {
 
     public VendedorResponseDto buscarPorCodigoBarras(String codigoBarras){
         Vendedor vendedor = vendedorRepository.findByCodigoBarras(codigoBarras)
-                .orElseThrow(() -> new VendedorException("Código de barras no reconocido"));
+                .orElseThrow(() -> ApiException.noEncontrado("Código de barras no reconocido"));
 
         return toResponseDto(vendedor);
     }

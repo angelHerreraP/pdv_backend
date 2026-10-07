@@ -1,34 +1,45 @@
 package com.pdv.pdv_backend.config.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<Object> handleNoEncontrado(RecursoNoEncontradoException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Object> handleApi(ApiException e){
+        return buildResponse(e.getHttpStatus(), e.getMessage());
     }
 
-    @ExceptionHandler(CredencialesInvalidasException.class)
-    public ResponseEntity<Object> handleCredenciales(CredencialesInvalidasException ex) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleCampos(MethodArgumentNotValidException ex){
+        String detalle = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + " : " + e.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return buildResponse(HttpStatus.BAD_REQUEST, detalle);
     }
 
-    @ExceptionHandler(ValidacionException.class)
-    public ResponseEntity<Object> handleValidacion(ValidacionException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccess(AccessDeniedException ex){
+        return buildResponse(HttpStatus.FORBIDDEN, "No tienes permiso para esta accion");
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneric(Exception ex) {
+        log.error("Error inesperado ", ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error inesperado");
     }
 
@@ -40,4 +51,5 @@ public class GlobalExceptionHandler {
         body.put("mensaje", mensaje);
         return new ResponseEntity<>(body, status);
     }
+
 }

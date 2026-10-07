@@ -2,6 +2,7 @@ package com.pdv.pdv_backend.producto.service;
 
 import com.pdv.pdv_backend.categoria.entity.Categoria;
 import com.pdv.pdv_backend.categoria.repository.CategoriaRepository;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.marca.entity.Marca;
 import com.pdv.pdv_backend.marca.repository.MarcaRepository;
 import com.pdv.pdv_backend.producto.dto.request.CreateProductRequestDto;
@@ -28,13 +29,13 @@ public class ProductoService {
 
     public ProductoResponse crearProducto(CreateProductRequestDto dto){
         if(dto.precioPublico().compareTo(BigDecimal.ZERO) <= 0){
-            throw new IllegalArgumentException("EL precio debe ser mayor a cero.");
+            throw ApiException.invalido("EL precio debe ser mayor a cero.");
         }
         Marca marca = marcaRepository.findById(dto.marcaId())
-                .orElseThrow(() -> new IllegalArgumentException("No conozco la marca."));
+                .orElseThrow(() -> ApiException.noEncontrado("No conozco la marca."));
 
         Categoria categoria = categoriaRepository.findById(dto.categoriaId())
-                .orElseThrow(() -> new IllegalArgumentException("Categoria no encontrada."));
+                .orElseThrow(() -> ApiException.noEncontrado("Categoria no encontrada."));
 
         Producto producto = new Producto();
         producto.setNombre(dto.nombre());

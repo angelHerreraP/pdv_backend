@@ -1,6 +1,6 @@
 package com.pdv.pdv_backend.marca.service;
 
-import com.pdv.pdv_backend.categoria.dto.response.ResponseCategoriaDto;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.marca.dto.request.MarcaResponseDto;
 import com.pdv.pdv_backend.marca.dto.response.CreateMarcaRequestDto;
 import com.pdv.pdv_backend.marca.entity.Marca;
@@ -19,7 +19,7 @@ public class MarcaService {
 
     public MarcaResponseDto crearMarca(CreateMarcaRequestDto dto){
         if (dto.nombre() == null || dto.nombre().isBlank()){
-            throw new IllegalArgumentException("El nombre de la categoria no puede estar vacio");
+            throw ApiException.invalido("El nombre de la categoria no puede estar vacio");
         }
 
         Marca nuevaMarca = new Marca();
@@ -30,7 +30,7 @@ public class MarcaService {
 
     public void eliminarMarca(Long id){
         Marca marca = marcaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("La marca a eliminar no existe"));
+                .orElseThrow(() -> ApiException.noEncontrado("La marca a eliminar no existe"));
         marcaRepository.delete(marca);
     }
 

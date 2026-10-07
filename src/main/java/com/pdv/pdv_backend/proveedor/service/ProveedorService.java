@@ -1,14 +1,12 @@
 package com.pdv.pdv_backend.proveedor.service;
 
-import com.pdv.pdv_backend.config.exception.ProveedorException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.proveedor.dto.request.CreateProveedorRequestDto;
 import com.pdv.pdv_backend.proveedor.dto.response.ProveedorResponseDto;
 import com.pdv.pdv_backend.proveedor.entity.Proveedor;
 import com.pdv.pdv_backend.proveedor.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.awt.print.PrinterException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +20,7 @@ public class ProveedorService {
 
     public ProveedorResponseDto agregarProveedor(CreateProveedorRequestDto dto){
         if(proveedorRepository.findByNombre(dto.nombre()).isPresent()){
-            throw new ProveedorException("El nombre de este proveedor ya esta registrado.");
+            throw ApiException.invalido("El nombre de este proveedor ya esta registrado.");
         }
 
         Proveedor proveedor = new Proveedor();
@@ -36,7 +34,7 @@ public class ProveedorService {
 
     public ProveedorResponseDto updateProveedor(Long proveedorId, CreateProveedorRequestDto dto){
         Proveedor proveedor = proveedorRepository.findById(proveedorId)
-                .orElseThrow(() -> new ProveedorException("No se encontro este proveedor"));
+                .orElseThrow(() -> ApiException.noEncontrado("No se encontro este proveedor"));
         if(dto.nombre() != null && !dto.nombre().isBlank()){
             proveedor.setNombre(dto.nombre());
         }

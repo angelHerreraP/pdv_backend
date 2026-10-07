@@ -1,6 +1,6 @@
 package com.pdv.pdv_backend.vendedores.service;
 
-import com.pdv.pdv_backend.config.exception.VendedorException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.sucursal.entity.Sucursal;
 import com.pdv.pdv_backend.sucursal.repository.SucursalRepository;
 import com.pdv.pdv_backend.vendedores.dto.request.CrearTurnoRequestDto;
@@ -28,11 +28,11 @@ public class TurnoService {
 
     public TurnoResponseDto marcarEntrada(CrearTurnoRequestDto dto){
         Vendedor vendedor = vendedorRepository.findById(dto.vendedorId())
-                .orElseThrow(() -> new VendedorException("EL vendedor no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("EL vendedor no existe."));
         Sucursal sucursal = sucursalRepository.findById(dto.sucursalId())
-                .orElseThrow(() -> new VendedorException("La sucursal no existe."));
+                .orElseThrow(() -> ApiException.noEncontrado("La sucursal no existe."));
         if (turnoVendedorRepository.findByVendedorIdAndHoraSalidaIsNull(vendedor.getId()).isPresent()) {
-            throw new VendedorException("El vendedor ya tiene un turno activo, debe cerrarlo primero.");
+            throw ApiException.conflicto("El vendedor ya tiene un turno activo, debe cerrarlo primero.");
         }
         TurnoVendedor turnoVendedor = new TurnoVendedor();
         turnoVendedor.setVendedor(vendedor);
@@ -44,7 +44,7 @@ public class TurnoService {
     }
     public TurnoResponseDto marcarSalida(Long vendedorId ){
         TurnoVendedor turnoVendedor = turnoVendedorRepository.findByVendedorIdAndHoraSalidaIsNull(vendedorId)
-                .orElseThrow(() -> new VendedorException("El vendedor no tiene un turno activo."));
+                .orElseThrow(() -> ApiException.conflicto("El vendedor no tiene un turno activo."));
         turnoVendedor.setHoraSalida(LocalDateTime.now());
         turnoVendedor = turnoVendedorRepository.save(turnoVendedor);
         return toResponseDto(turnoVendedor);

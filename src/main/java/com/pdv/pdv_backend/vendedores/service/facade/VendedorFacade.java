@@ -1,6 +1,6 @@
 package com.pdv.pdv_backend.vendedores.service.facade;
 
-import com.pdv.pdv_backend.config.exception.VendedorException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.vendedores.dto.request.CrearTurnoRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.response.TurnoResponseDto;
 import com.pdv.pdv_backend.vendedores.entity.Vendedor;
@@ -23,9 +23,9 @@ public class VendedorFacade {
 
     public TurnoResponseDto ficharPorCodigoBarras(String codigoBarras, Long sucursalId){
         Vendedor vendedor = vendedorRepository.findByCodigoBarras(codigoBarras)
-                .orElseThrow(() -> new VendedorException("El codigo de barras no existe"));
+                .orElseThrow(() -> ApiException.noEncontrado("El codigo de barras no existe"));
         if(!vendedor.getActivo()){
-            throw new VendedorException("Este vendedor no labora actualmente con nosotros");
+            throw ApiException.conflicto("Este vendedor no labora actualmente con nosotros");
         }
         return turnoVendedorRepository.findByVendedorIdAndHoraSalidaIsNull(vendedor.getId())
                 .map(turnoActivo -> turnoService.marcarSalida(vendedor.getId()))

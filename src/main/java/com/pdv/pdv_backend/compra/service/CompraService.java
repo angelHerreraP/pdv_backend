@@ -8,7 +8,7 @@ import com.pdv.pdv_backend.compra.entity.Compra;
 import com.pdv.pdv_backend.compra.entity.DetalleCompra;
 import com.pdv.pdv_backend.compra.repository.CompraRepository;
 import com.pdv.pdv_backend.compra.repository.DetalleCompraRepository;
-import com.pdv.pdv_backend.config.exception.CompraException;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import com.pdv.pdv_backend.inventario.dto.request.AjustarInventarioDto;
 import com.pdv.pdv_backend.inventario.service.InventarioService;
 import com.pdv.pdv_backend.producto.entity.Producto;
@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CompraService {
@@ -43,9 +45,9 @@ public class CompraService {
 
     public CompraResponseDto crearCompra(CreateCompraRequestDto dto) {
         Sucursal sucursal = sucursalRepository.findById(dto.sucursalId())
-                .orElseThrow(() -> new CompraException("La sucursal no existe"));
+                .orElseThrow(() -> ApiException.noEncontrado("La sucursal no existe"));
         Proveedor proveedor = proveedorRepository.findById(dto.proveedorId())
-                .orElseThrow(() -> new CompraException("EL proveedor al que intenta asignar esta compra no existe"));
+                .orElseThrow(() -> ApiException.noEncontrado("EL proveedor al que intenta asignar esta compra no existe"));
 
         Compra compra = new Compra();
         compra.setProveedor(proveedor);
@@ -55,7 +57,7 @@ public class CompraService {
         List<DetalleCompraResponseDto> detallesResponse = new ArrayList<>();
         for (DetallecompraRequestDto items : dto.productos()) {
             Producto producto = productoRepository.findById(items.productoId())
-                    .orElseThrow(() -> new CompraException("Producto no encontrado. "));
+                    .orElseThrow(() -> ApiException.noEncontrado("Producto no encontrado. "));
             DetalleCompra detalleCompra = new DetalleCompra();
             detalleCompra.setCompra(compra);
             detalleCompra.setProducto(producto);
@@ -79,15 +81,21 @@ public class CompraService {
 
     }
 
-    public List<CompraResponseDto> listarCompras(){
-        return compraRepository.findAll()
-                .stream()
-                .map(this::toResponseDto)
+    public List<CompraResponseDto> listarCompras() {
+        List<Compra> compras = compraRepository.findAll();
+
+        List<DetalleCompra> todosLosDetalles = detalleCompraRepository.findAll();
+
+        Map<Long, List<DetalleCompra>> detallesPorCompra = todosLosDetalles.stream()
+                .collect(Collectors.groupingBy(d -> d.getCompra().getId()));
+
+        return compras.stream()
+                .map(compra -> toResponseDto(compra, detallesPorCompra.getOrDefault(compra.getId(), List.of())))
                 .toList();
     }
-    private CompraResponseDto toResponseDto(Compra compra) {
-        List<DetalleCompraResponseDto> detalles = detalleCompraRepository.findByCompraId(compra.getId())
-                .stream()
+
+    private CompraResponseDto toResponseDto(Compra compra, List<DetalleCompra> detalles) {
+        List<DetalleCompraResponseDto> detallesDto = detalles.stream()
                 .map(d -> new DetalleCompraResponseDto(
                         d.getProducto().getId(),
                         d.getProducto().getNombre(),
@@ -101,7 +109,7 @@ public class CompraService {
                 compra.getProveedor().getNombre(),
                 compra.getSucursal().getNombre(),
                 compra.getFecha(),
-                detalles
+                detallesDto
         );
     }
 }

@@ -4,6 +4,7 @@ import com.pdv.pdv_backend.auth.dto.request.LoginRequestDto;
 import com.pdv.pdv_backend.auth.dto.response.LoginResponseDto;
 import com.pdv.pdv_backend.auth.entity.Usuario;
 import com.pdv.pdv_backend.auth.repository.UsuarioRepository;
+import com.pdv.pdv_backend.config.exception.ApiException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,9 @@ public class AuthService {
 
     public LoginResponseDto login(LoginRequestDto dto){
         Usuario usuario = usuarioRepository.findByUsuario(dto.usuario())
-                .orElseThrow(()-> new IllegalArgumentException("El usuario o contraseña son incorrectos."));
+                .orElseThrow(()-> ApiException.noAutorizado("El usuario o contraseña son incorrectos."));
         if(!passwordEncoder.matches(dto.password(), usuario.getPasswordHash())){
-            throw new IllegalArgumentException("El usuario o contraseña son incorrectos.");
+            throw ApiException.noAutorizado("El usuario o contraseña son incorrectos.");
         }
         String token = jwtService.generateToken(usuario.getUsuario(), usuario.getRol().getNombre(), usuario.getSucursal().getId());
         return new LoginResponseDto(token, usuario.getUsuario(), usuario.getRol().getNombre(), usuario.getSucursal().getNombre());
