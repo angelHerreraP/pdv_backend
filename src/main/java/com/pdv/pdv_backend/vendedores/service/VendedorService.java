@@ -6,18 +6,16 @@ import com.pdv.pdv_backend.vendedores.dto.request.UpdateVendedorRequestDto;
 import com.pdv.pdv_backend.vendedores.dto.response.VendedorResponseDto;
 import com.pdv.pdv_backend.vendedores.entity.Vendedor;
 import com.pdv.pdv_backend.vendedores.repository.VendedorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class VendedorService {
     private final VendedorRepository vendedorRepository;
-
-    public VendedorService(VendedorRepository vendedorRepository) {
-        this.vendedorRepository = vendedorRepository;
-    }
 
     public VendedorResponseDto crearVendedor(CrearVendedorRequestDto dto){
         Vendedor vendedor = new Vendedor();

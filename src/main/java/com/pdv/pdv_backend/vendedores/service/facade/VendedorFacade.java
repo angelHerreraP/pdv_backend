@@ -7,19 +7,17 @@ import com.pdv.pdv_backend.vendedores.entity.Vendedor;
 import com.pdv.pdv_backend.vendedores.repository.TurnoVendedorRepository;
 import com.pdv.pdv_backend.vendedores.repository.VendedorRepository;
 import com.pdv.pdv_backend.vendedores.service.TurnoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class VendedorFacade {
     private final VendedorRepository vendedorRepository;
     private final TurnoService turnoService;
     private final TurnoVendedorRepository turnoVendedorRepository;
 
-    public VendedorFacade(VendedorRepository vendedorRepository, TurnoService turnoService, TurnoVendedorRepository turnoVendedorRepository) {
-        this.vendedorRepository = vendedorRepository;
-        this.turnoService = turnoService;
-        this.turnoVendedorRepository = turnoVendedorRepository;
-    }
+
 
     public TurnoResponseDto ficharPorCodigoBarras(String codigoBarras, Long sucursalId){
         Vendedor vendedor = vendedorRepository.findByCodigoBarras(codigoBarras)

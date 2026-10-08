@@ -8,18 +8,16 @@ import com.pdv.pdv_backend.vendedores.entity.HorarioVendedor;
 import com.pdv.pdv_backend.vendedores.entity.Vendedor;
 import com.pdv.pdv_backend.vendedores.repository.HorarioVendedorRepository;
 import com.pdv.pdv_backend.vendedores.repository.VendedorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class HorarioService {
 
     private final HorarioVendedorRepository horarioVendedorRepository;
     private final VendedorRepository vendedorRepository;
 
-    public HorarioService(HorarioVendedorRepository horarioVendedorRepository, VendedorRepository vendedorRepository) {
-        this.vendedorRepository = vendedorRepository;
-        this.horarioVendedorRepository = horarioVendedorRepository;
-    }
 
     public HorarioResponseDto crearHorario(CrearHorarioRequestDto dto){
         if(horarioVendedorRepository.findByVendedorId(dto.vendedorId()).isPresent()){
