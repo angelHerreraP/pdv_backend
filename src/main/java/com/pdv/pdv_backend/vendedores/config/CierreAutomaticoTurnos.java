@@ -1,7 +1,17 @@
+package com.pdv.pdv_backend.vendedores.config;
+
+import com.pdv.pdv_backend.vendedores.repository.TurnoVendedorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
-public class CierreAutomaticoTurno{
+public class CierreAutomaticoTurnos{
     private final TurnoVendedorRepository turnoVendedorRepository;
 
     @Scheduled(cron = "0 0 * * * *", zone = "America/Mexico_City")
@@ -19,7 +29,6 @@ public class CierreAutomaticoTurno{
             turnoVendedorRepository.findByHoraSalidaIsNull()
                     .forEach(t -> t.setHoraSalida(corte22));
         }
-    }
     }
 
 }

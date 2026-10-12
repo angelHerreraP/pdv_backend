@@ -8,6 +8,7 @@ import com.pdv.pdv_backend.vendedores.entity.Vendedor;
 import com.pdv.pdv_backend.vendedores.repository.VendedorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ import java.util.UUID;
 public class VendedorService {
     private final VendedorRepository vendedorRepository;
 
+
+    @Transactional
     public VendedorResponseDto crearVendedor(CrearVendedorRequestDto dto){
         Vendedor vendedor = new Vendedor();
         vendedor.setNombre(dto.nombre());
@@ -28,6 +31,7 @@ public class VendedorService {
         return toResponseDto(vendedor);
     }
 
+    @Transactional
     public VendedorResponseDto modificarVendedor(Long id,UpdateVendedorRequestDto dto){
         Vendedor vendedor =  vendedorRepository.findById(id)
                 .orElseThrow(() -> ApiException.noEncontrado("El vendedor no existe."));
@@ -56,12 +60,34 @@ public class VendedorService {
                 .toList();
     }
 
+
     public VendedorResponseDto buscarPorCodigoBarras(String codigoBarras){
         Vendedor vendedor = vendedorRepository.findByCodigoBarras(codigoBarras)
                 .orElseThrow(() -> ApiException.noEncontrado("Código de barras no reconocido"));
 
         return toResponseDto(vendedor);
     }
+
+    public VendedorResponseDto buscarPorId(Long id){
+        Vendedor vendedor = vendedorRepository.findById(id)
+                .orElseThrow(() -> ApiException.noEncontrado("No se encontro este vendedor "));
+        return toResponseDto(vendedor);
+    }
+
+    public Vendedor obtenerActivo(Long id){
+        Vendedor vendedor = vendedorRepository.findById(id)
+                .orElseThrow(() -> ApiException.noEncontrado("El vendedor no existe"));
+        if(!Boolean.TRUE.equals(vendedor.getActivo())){
+            throw ApiException.conflicto("El vendedor no esta activo");
+        }
+        return vendedor;
+    }
+    public Vendedor obtenerPorCodigo(String codigo){
+        Vendedor vendedor = vendedorRepository.findByCodigoBarras(codigo)
+                .orElseThrow(() -> ApiException.noEncontrado("No se encontro el vendedor con este codigo de barras"));
+        return vendedor;
+    }
+
 
 
     private VendedorResponseDto toResponseDto(Vendedor vendedor){
@@ -75,6 +101,7 @@ public class VendedorService {
                 );
     }
 
+
     private String generarCodigoBarras(){
         String codigo;
         do{
@@ -82,12 +109,6 @@ public class VendedorService {
         } while(vendedorRepository.existsByCodigoBarras(codigo));
         return codigo;
     }
+
 }
 
-//    private VendedorSucursalResponseDto toVendedorResponseDto(Vendedor vendedor){
-//        return new VendedorSucursalResponseDto(
-//                vendedor.getId(),
-//                vendedor.getCodigoBarras(),
-//                vendedor.getDiaDescanso()
-//        );
-//    }

@@ -1,5 +1,6 @@
 package com.pdv.pdv_backend.venta.entity;
 
+import com.pdv.pdv_backend.autorizations.entity.CodigoAutorizacion;
 import com.pdv.pdv_backend.sucursal.entity.Sucursal;
 import com.pdv.pdv_backend.vendedores.entity.Vendedor;
 import com.pdv.pdv_backend.venta.constants.EstadoVenta;
@@ -34,14 +35,15 @@ public class Venta {
     @Column(name = "total", nullable = false)
     private BigDecimal total;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "metodo_pago", nullable = false)
-    private MetodoPago metodoPago;
-
-    @Column(name = "folio_credito")
-    private String folioCredito;
-
     private LocalDateTime fecha;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal descuento = BigDecimal.ZERO;
+
+    @OneToOne
+    @JoinColumn(name = "codigo_autorizacion_id")
+    private CodigoAutorizacion codigoAutorizacion;
+
 
 
     @Enumerated(EnumType.STRING)

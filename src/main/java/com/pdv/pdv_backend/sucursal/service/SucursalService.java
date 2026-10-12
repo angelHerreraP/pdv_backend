@@ -66,6 +66,12 @@ public class SucursalService {
 
     }
 
+    public Sucursal encontrarPorId(Long id){
+        Sucursal sucursal = sucursalRepository.findById(id)
+                .orElseThrow(() -> ApiException.noEncontrado("La sucursal que busca no existe"));
+        return sucursal;
+    }
+
 
     private SucursalResponseDto teResponseDto(Sucursal sucursal){
         return new SucursalResponseDto(

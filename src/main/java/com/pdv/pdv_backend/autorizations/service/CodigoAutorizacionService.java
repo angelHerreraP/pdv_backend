@@ -13,6 +13,7 @@ import com.pdv.pdv_backend.producto.repository.ProductoRepository;
 import com.pdv.pdv_backend.sucursal.repository.SucursalRepository;
 import com.pdv.pdv_backend.venta.repository.VentaRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +23,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class CodigoAutorizacionService {
     private final CodigoAutorizacionRepository codigoAutorizacionRepository;
     private final UsuarioRepository usuarioRepository;
     private final SucursalRepository sucursalRepository;
     private final ProductoRepository productoRepository;
     private final VentaRepository ventaRepository;
-
-    public CodigoAutorizacionService(CodigoAutorizacionRepository codigoAutorizacionRepository, UsuarioRepository usuarioRepository, SucursalRepository sucursalRepository, ProductoRepository productoRepository, VentaRepository ventaRepository) {
-        this.codigoAutorizacionRepository = codigoAutorizacionRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.sucursalRepository = sucursalRepository;
-        this.productoRepository = productoRepository;
-        this.ventaRepository = ventaRepository;
-    }
 
     @Value("${autorizacion.vigencia-minutos:10}")
     private long vigenciaMinutos;

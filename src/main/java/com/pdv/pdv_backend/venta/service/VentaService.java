@@ -65,7 +65,6 @@ public class VentaService {
         Venta venta = new Venta();
         venta.setSucursal(sucursal);
         venta.setVendedor(vendedor);
-        venta.setMetodoPago(MetodoPago.EFECTIVO);
         venta.setEstado(EstadoVenta.CERRADA);
         venta.setFecha(LocalDateTime.now());
         venta.setTotal(BigDecimal.ZERO);

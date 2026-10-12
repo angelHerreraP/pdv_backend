@@ -17,16 +17,6 @@ public class TurnoController {
         this.turnoService = turnoService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TurnoResponseDto abrirTurno(@RequestBody CrearTurnoRequestDto dto){
-        return turnoService.marcarEntrada(dto);
-    }
-
-    @PatchMapping("/activo/{vendedorId}")
-    public TurnoResponseDto cerrarTurno(@PathVariable Long vendedorId){
-        return turnoService.marcarSalida(vendedorId);
-    }
 
     @GetMapping("/all")
     public List<TurnoResponseDto> listarVendedoresActivosHoy(){

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +25,7 @@ public class Vendedor {
     private String codigoBarras;
 
     @Column(name = "salario_semanal")
-    private Double salarioSemanal;
+    private BigDecimal salarioSemanal;
 
     @Column(name = "dia_descanso")
     private String diaDescanso;

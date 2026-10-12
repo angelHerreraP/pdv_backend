@@ -15,13 +15,7 @@ import java.util.Optional;
 public interface CodigoAutorizacionRepository extends JpaRepository<CodigoAutorizacion, Long> {
     Optional<CodigoAutorizacion> findByCodigo(String codigo);
 
-    //@Query(
-    //        "SELECT COUNT(*) > 0 FROM codigo_autorizacion WHERE action = :action AND usado = false AND expira_en > :ahora AND(parametros ->> 'ventaId')::bigint = :ventaId"
-    //)
-    //boolean existsVigentePara(@Param("action") String action, @Param("ventaId") Long ventaId, @Param("ahora") LocalDateTime ahora);
-
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT c FROM CodigoAutorizacion c WHERE c.codigo = :codigo")
+    @Query("select c from CodigoAutorizacion c where c.codigo = :codigo")
     Optional<CodigoAutorizacion> findByCodigoForUpdate(@Param("codigo") String codigo);
 }
